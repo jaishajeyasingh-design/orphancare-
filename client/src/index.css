@@ -1,0 +1,60 @@
+@import "tailwindcss";
+@import "react-big-calendar/lib/css/react-big-calendar.css";
+
+@theme {
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  
+  --color-secondary-50: #f5f3ff;
+  --color-secondary-500: #8b5cf6;
+  --color-secondary-600: #7c3aed;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased font-sans m-0 p-0;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg shadow-sm transition flex items-center justify-center gap-2;
+  }
+  
+  .btn-secondary {
+    @apply bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-medium py-2 px-4 rounded-lg shadow-sm transition flex items-center justify-center gap-2;
+  }
+
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-xl border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl p-6 transition-all;
+  }
+
+  /* Form Elements mapped for quick reuse */
+  .form-label {
+    @apply block text-sm font-medium text-slate-700 mb-1.5;
+  }
+  
+  .form-input {
+    @apply w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all;
+  }
+}
+
+/* React Big Calendar Overrides for Tailwind integration */
+.rbc-calendar {
+  @apply font-sans border-0;
+}
+.rbc-month-view, .rbc-time-view, .rbc-agenda-view {
+  @apply rounded-xl border border-slate-200 bg-white overflow-hidden;
+}
+.rbc-header {
+  @apply py-3 font-medium text-slate-600 border-b border-slate-100;
+}
+.rbc-today {
+  @apply bg-primary-50/30;
+}
+.rbc-event {
+  @apply rounded-md bg-primary-500 shadow-sm border-0 px-2 py-1;
+}
