@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Outlet, Navigate, Link, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { LayoutDashboard, Users, Heart, LogOut, Bell, Search, FileText, Megaphone } from 'lucide-react';
+import { LayoutDashboard, Users, Heart, LogOut, Bell, Search, FileText, Megaphone, Sparkles, Award, TrendingUp, ShieldCheck, UserCheck } from 'lucide-react';
 
 const MainLayout = () => {
   const { user, logout } = useContext(AuthContext);
@@ -11,19 +11,25 @@ const MainLayout = () => {
     return <Navigate to="/login" replace />;
   }
 
-  // Define sidebar links based on role (expand later)
+  // Base navigation links
   const links = [
     { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
+    { name: 'Children', path: '/children', icon: <Users size={18} /> },
+    { name: 'Opportunities', path: '/opportunities', icon: <Award size={18} /> },
     { name: 'Requirements', path: '/requirements', icon: <Megaphone size={18} /> },
     { name: 'Donations', path: '/donations', icon: <Heart size={18} /> },
-    { name: 'Volunteers', path: '/volunteers', icon: <Users size={18} /> },
+    { name: 'Volunteers', path: '/volunteers', icon: <UserCheck size={18} /> },
+    { name: 'AI Matching', path: '/matching', icon: <Sparkles size={18} /> },
+    { name: 'Development', path: '/development', icon: <TrendingUp size={18} /> },
+    { name: 'Progress', path: '/progress', icon: <FileText size={18} /> },
+    { name: 'Impact', path: '/impact', icon: <ShieldCheck size={18} /> },
   ];
 
-  if (user.role === 'Admin') {
+  if (user.role === 'Admin' || user.role === 'Organization') {
       links.push({ name: 'Manage Residents', path: '/residents', icon: <Users size={20} /> });
   }
 
-  if (user.role === 'Adopter') {
+  if (user.role === 'Adopter' || user.role === 'Donor') {
       links.push({ name: 'Available Children', path: '/adopter/children', icon: <Search size={20} /> });
       links.push({ name: 'My Requests', path: '/adopter/my-requests', icon: <FileText size={20} /> });
   }
