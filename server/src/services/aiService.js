@@ -455,11 +455,167 @@ class AIService {
     return { explanation };
   }
 
+  /**
+   * AI Development Plan Engine Entry Point
+   * Generates a milestone-driven, independence-oriented growth plan for an anonymized child profile.
+   */
   async generateDevelopmentPlan(childId) {
+    if (!childId) {
+      throw new Error('Child ID is required to generate a development plan.');
+    }
+
+    const child = await childService.getChildById(childId);
+    if (!child) {
+      const error = new Error('Child profile not found.');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const matchRepository = require('../repositories/matchRepository');
+
+    // Retrieve approved matches for child
+    const approvedMatches = await matchRepository.findAll({ child: childId, status: 'Approved' });
+    const approvedOpportunities = approvedMatches.map(m => m.opportunity).filter(Boolean);
+
+    // Construct anonymized payload for AI
+    const anonymizedPayload = {
+      child: {
+        age: child.age,
+        educationLevel: child.educationLevel || '',
+        interests: child.interests || [],
+        skills: child.skills || [],
+        aspirations: child.aspirations || [],
+        needs: (child.needs || []).map(n => ({
+          category: n.category,
+          description: n.description,
+          urgency: n.urgency
+        }))
+      },
+      approved_opportunities: approvedOpportunities.map(o => ({
+        title: o.title,
+        type: o.type,
+        description: o.description
+      }))
+    };
+
+    // Execute Python DevelopmentPlanAgent / Node.js Engine
+    const aiRawResult = await this._executeDevelopmentPlanAgent(anonymizedPayload);
+
+    // Validate and Format Plan Output
+    const validatedPlan = this._validateDevelopmentPlanOutput(aiRawResult);
+
+    return validatedPlan;
+  }
+
+  /**
+   * Internal agent runner for Development Plan Agent
+   */
+  async _executeDevelopmentPlanAgent(anonymizedPayload) {
+    return new Promise((resolve) => {
+      const pythonScript = path.resolve(__dirname, '../../../ai/agents/development_plan_agent/service.py');
+      const payloadStr = JSON.stringify(anonymizedPayload);
+
+      execFile('python', [pythonScript, payloadStr], { timeout: 8000 }, (error, stdout, stderr) => {
+        if (!error && stdout) {
+          try {
+            const parsed = JSON.parse(stdout.trim());
+            if (parsed && parsed.title && parsed.goals) {
+              return resolve(parsed);
+            }
+          } catch (e) {
+            // JSON parse fallback
+          }
+        }
+        resolve(this._jsFallbackDevelopmentPlanEngine(anonymizedPayload));
+      });
+    });
+  }
+
+  /**
+   * Fallback JS Rule Engine for Development Plan Generation
+   */
+  _jsFallbackDevelopmentPlanEngine(payload) {
+    const child = payload.child || {};
+    const approvedOpps = payload.approved_opportunities || [];
+
+    const aspirations = child.aspirations || [];
+    const aspTitle = aspirations.length > 0 ? aspirations[0] : 'Independence & Skill';
+    const title = `${aspTitle.trim()} Growth Plan`;
+
+    const goals = [];
+    const interests = child.interests || ['academic subjects'];
+    const skills = child.skills || interests;
+
+    const primaryInterest = interests[0] || 'Core Academics';
+    const primarySkill = skills[0] || primaryInterest;
+
+    goals.push({
+      description: `Strengthen fundamentals in ${primaryInterest} and core academic subjects`,
+      targetWeeks: 4,
+      status: 'Pending'
+    });
+
+    goals.push({
+      description: `Complete practical milestone project applying ${primarySkill} skills`,
+      targetWeeks: 8,
+      status: 'Pending'
+    });
+
+    if (approvedOpps.length > 0) {
+      const oppTitle = approvedOpps[0].title || 'matched support opportunity';
+      goals.push({
+        description: `Participate consistently in '${oppTitle}' and track progress with mentor`,
+        targetWeeks: 12,
+        status: 'Pending'
+      });
+    } else {
+      goals.push({
+        description: `Engage in structured weekly mentorship sessions and skill development workshops`,
+        targetWeeks: 12,
+        status: 'Pending'
+      });
+    }
+
+    goals.push({
+      description: `Present completed growth portfolio toward career goal of becoming a ${aspTitle}`,
+      targetWeeks: 16,
+      status: 'Pending'
+    });
+
+    return { title, goals };
+  }
+
+  /**
+   * Validates and formats Development Plan AI output into concrete MongoDB goals
+   */
+  _validateDevelopmentPlanOutput(aiOutput) {
+    if (!aiOutput || !aiOutput.title || !Array.isArray(aiOutput.goals)) {
+      throw new Error('Invalid AI response: Expected a JSON object containing "title" and a "goals" array.');
+    }
+
+    const now = Date.now();
+    const validStatuses = ['Pending', 'In_Progress', 'Achieved'];
+
+    const formattedGoals = aiOutput.goals.map((g, index) => {
+      if (!g.description || typeof g.description !== 'string') {
+        throw new Error(`Invalid development goal at index ${index}: missing description.`);
+      }
+
+      const weeks = typeof g.targetWeeks === 'number' && g.targetWeeks > 0 ? g.targetWeeks : (index + 1) * 4;
+      const targetDate = new Date(now + weeks * 7 * 24 * 60 * 60 * 1000);
+
+      let status = g.status && validStatuses.includes(g.status) ? g.status : 'Pending';
+
+      return {
+        description: g.description.trim(),
+        targetDate,
+        status
+      };
+    });
+
     return {
-      childId,
-      goals: ['Milestone 1: Quarterly Academic Assessment'],
-      status: 'skeleton_plan'
+      title: aiOutput.title.trim(),
+      goals: formattedGoals
     };
   }
 }
