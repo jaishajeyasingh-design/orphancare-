@@ -5,7 +5,18 @@ const opportunitySchema = new mongoose.Schema({
   type: { type: String, enum: ['Scholarship', 'Mentorship', 'Educational', 'Medical', 'Equipment'], required: true },
   description: { type: String, required: true },
   sponsor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  status: { type: String, enum: ['Open', 'Assigned', 'Completed'], default: 'Open' }
+  status: { type: String, enum: ['Open', 'Assigned', 'Completed'], default: 'Open' },
+  // Matching & Eligibility fields
+  supportCategories: [{ type: String }],
+  requiredSkills: [{ type: String }],
+  targetInterests: [{ type: String }],
+  eligibility: {
+    minAge: { type: Number },
+    maxAge: { type: Number },
+    educationLevel: { type: String },
+    notes: { type: String }
+  },
+  availability: { type: String }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Opportunity', opportunitySchema);
