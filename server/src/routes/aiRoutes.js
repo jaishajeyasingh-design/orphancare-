@@ -5,11 +5,19 @@ const aiService = require('../services/aiService');
 
 router.post('/analyze-needs', protect, async (req, res) => {
   try {
-    const { childId, rawData } = req.body;
-    const result = await aiService.analyzeChildNeeds(childId, rawData);
+    const { childId } = req.body;
+    if (!childId) {
+      return res.status(400).json({ success: false, message: 'childId is required in request body.' });
+    }
+    const result = await aiService.analyzeChildNeeds(childId);
     res.json(result);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    const statusCode = error.statusCode || 500;
+    const clientMessage = error.statusCode === 404 ? error.message : 'Unable to analyze child needs';
+    res.status(statusCode).json({
+      success: false,
+      message: clientMessage
+    });
   }
 });
 
