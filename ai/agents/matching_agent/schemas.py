@@ -1,9 +1,11 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from typing import List, Dict, Optional
 
-class MatchRequest(BaseModel):
-    child_id: str
-    donor_or_opportunity_id: str
+class MatchCandidateInput(BaseModel):
+    child: Dict
+    opportunity: Dict
+    score_breakdown: Optional[Dict] = None
 
-class MatchResponse(BaseModel):
-    match_score: float
-    reasoning: str
+class MatchExplanationResult(BaseModel):
+    explanation: str = Field(..., min_length=5, max_length=1000)
+
