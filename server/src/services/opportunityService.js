@@ -17,6 +17,9 @@ class OpportunityService {
     if (!data.sponsor && currentUser) {
       data.sponsor = currentUser._id || currentUser.id;
     }
+    if (!data.organization && currentUser && currentUser.organization) {
+      data.organization = currentUser.organization;
+    }
     return await opportunityRepository.create(data);
   }
 

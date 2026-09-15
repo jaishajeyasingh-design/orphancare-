@@ -1,6 +1,7 @@
-const { VolunteerApplication, VolunteerActivity } = require('../models/MiscModels');
+const { VolunteerApplication, VolunteerActivity, VolunteerRequest } = require('../models/MiscModels');
+const Opportunity = require('../models/Opportunity');
 
-// @desc    Get volunteer applications
+// @desc    Get volunteer applications (Legacy)
 // @route   GET /api/volunteers/applications
 // @access  Private (Admin)
 const getVolunteerApplications = async (req, res) => {
@@ -15,7 +16,7 @@ const getVolunteerApplications = async (req, res) => {
     }
 };
 
-// @desc    Update volunteer application status
+// @desc    Update volunteer application status (Legacy)
 // @route   PUT /api/volunteers/applications/:id/status
 // @access  Private (Admin)
 const updateApplicationStatus = async (req, res) => {
@@ -78,7 +79,7 @@ const getActivities = async (req, res) => {
     }
 };
 
-// @desc    Get applications for logged in volunteer
+// @desc    Get applications for logged in volunteer (Legacy)
 // @route   GET /api/volunteers/my-applications
 // @access  Private (Volunteer)
 const getMyApplications = async (req, res) => {
@@ -92,7 +93,7 @@ const getMyApplications = async (req, res) => {
     }
 };
 
-// @desc    Apply for an activity
+// @desc    Apply for an activity (Legacy)
 // @route   POST /api/volunteers/apply
 // @access  Private (Volunteer)
 const applyForActivity = async (req, res) => {
@@ -117,11 +118,215 @@ const applyForActivity = async (req, res) => {
     }
 };
 
+// @desc    Create a volunteer activity (Admin)
+// @route   POST /api/volunteers/activities
+// @access  Private (Admin)
+const createActivity = async (req, res) => {
+    try {
+        const { title, description, date } = req.body;
+        if (!title || !date) {
+            return res.status(400).json({ message: 'Title and date are required' });
+        }
+
+        const activity = new VolunteerActivity({
+            title,
+            description,
+            date: new Date(date),
+            status: 'Upcoming'
+        });
+
+        const createdActivity = await activity.save();
+        res.status(201).json(createdActivity);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
+// ==================================================
+// NEW VOLUNTEER REQUEST WORKFLOW CONTROLLER METHODS
+// ==================================================
+
+// @desc    Submit a volunteering request for a published opportunity
+// @route   POST /api/volunteers/requests
+// @access  Private (Volunteer)
+const submitVolunteerRequest = async (req, res) => {
+    try {
+        const { opportunityId, message } = req.body;
+        if (!opportunityId) {
+            return res.status(400).json({ message: 'Opportunity ID is required.' });
+        }
+
+        const opportunity = await Opportunity.findById(opportunityId).populate('organization');
+        if (!opportunity) {
+            return res.status(404).json({ message: 'Volunteering opportunity not found.' });
+        }
+
+        const organizationId = opportunity.organization?._id || opportunity.organization || req.body.organizationId;
+        if (!organizationId) {
+            return res.status(400).json({ message: 'Opportunity is not linked to a valid organization.' });
+        }
+
+        // Check for duplicate active request server-side
+        const existing = await VolunteerRequest.findOne({
+            volunteer: req.user._id,
+            opportunity: opportunityId,
+            status: { $in: ['Pending', 'Approved'] }
+        });
+
+        if (existing) {
+            return res.status(400).json({ message: 'You already have an active request for this volunteering opportunity.' });
+        }
+
+        const request = new VolunteerRequest({
+            volunteer: req.user._id, // FORCE identity from JWT token
+            organization: organizationId,
+            opportunity: opportunityId,
+            child: opportunity.child || req.body.childId || undefined,
+            message: message || '',
+            status: 'Pending'
+        });
+
+        const createdRequest = await request.save();
+        const populatedRequest = await VolunteerRequest.findById(createdRequest._id)
+            .populate('opportunity', 'title type description availability supportCategories requiredSkills')
+            .populate('organization', 'name email phone address')
+            .populate('child', 'anonymizedCode age educationLevel');
+
+        res.status(201).json(populatedRequest);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
+// @desc    Get submitted requests for logged-in volunteer
+// @route   GET /api/volunteers/my-requests
+// @access  Private (Volunteer)
+const getMyVolunteerRequests = async (req, res) => {
+    try {
+        const requests = await VolunteerRequest.find({ volunteer: req.user._id })
+            .populate('opportunity', 'title type description availability supportCategories requiredSkills')
+            .populate('organization', 'name email phone address')
+            .populate('child', 'anonymizedCode age educationLevel')
+            .sort({ createdAt: -1 });
+        res.json(requests);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
+// @desc    Get volunteer requests for Admin's organization
+// @route   GET /api/volunteers/org-requests
+// @access  Private (Admin / Organization)
+const getOrgVolunteerRequests = async (req, res) => {
+    try {
+        const filter = {};
+        if ((req.user.role === 'Admin' || req.user.role === 'Organization') && req.user.organization) {
+            filter.organization = req.user.organization;
+        } else if (req.query.organization) {
+            filter.organization = req.query.organization;
+        }
+
+        const requests = await VolunteerRequest.find(filter)
+            .populate('volunteer', 'name email phone role')
+            .populate('opportunity', 'title type description availability supportCategories requiredSkills')
+            .populate('organization', 'name email phone address')
+            .populate('child', 'anonymizedCode age educationLevel')
+            .sort({ createdAt: -1 });
+
+        res.json(requests);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
+// @desc    Get volunteer request by ID with isolation checks
+// @route   GET /api/volunteers/requests/:id
+// @access  Private (Volunteer / Admin / Organization)
+const getVolunteerRequestById = async (req, res) => {
+    try {
+        const request = await VolunteerRequest.findById(req.params.id)
+            .populate('volunteer', 'name email phone role')
+            .populate('opportunity', 'title type description availability supportCategories requiredSkills')
+            .populate('organization', 'name email phone address')
+            .populate('child', 'anonymizedCode age educationLevel');
+
+        if (!request) {
+            return res.status(404).json({ message: 'Volunteer request not found.' });
+        }
+
+        // Privacy & Isolation checks
+        if (req.user.role === 'Volunteer') {
+            const vId = request.volunteer?._id ? request.volunteer._id.toString() : request.volunteer.toString();
+            if (vId !== req.user._id.toString()) {
+                return res.status(404).json({ message: 'Volunteer request not found.' });
+            }
+        } else if ((req.user.role === 'Admin' || req.user.role === 'Organization') && req.user.organization) {
+            const userOrg = req.user.organization._id ? req.user.organization._id.toString() : req.user.organization.toString();
+            const reqOrg = request.organization?._id ? request.organization._id.toString() : request.organization.toString();
+            if (userOrg !== reqOrg) {
+                return res.status(404).json({ message: 'Volunteer request not found.' });
+            }
+        }
+
+        res.json(request);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
+// @desc    Approve / Reject / Complete / Cancel volunteer request status
+// @route   PUT /api/volunteers/requests/:id/status
+// @access  Private (Admin / Organization)
+const updateVolunteerRequestStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        const validStatuses = ['Pending', 'Approved', 'Rejected', 'Completed', 'Cancelled'];
+        if (!status || !validStatuses.includes(status)) {
+            return res.status(400).json({ message: 'Invalid status provided.' });
+        }
+
+        const request = await VolunteerRequest.findById(req.params.id);
+        if (!request) {
+            return res.status(404).json({ message: 'Volunteer request not found.' });
+        }
+
+        // Check organization isolation
+        if ((req.user.role === 'Admin' || req.user.role === 'Organization') && req.user.organization) {
+            const userOrg = req.user.organization._id ? req.user.organization._id.toString() : req.user.organization.toString();
+            const reqOrg = request.organization?._id ? request.organization._id.toString() : request.organization.toString();
+            if (userOrg !== reqOrg) {
+                return res.status(404).json({ message: 'Volunteer request not found.' });
+            }
+        }
+
+        request.status = status;
+        await request.save();
+
+        const updatedRequest = await VolunteerRequest.findById(request._id)
+            .populate('volunteer', 'name email phone role')
+            .populate('opportunity', 'title type description availability supportCategories requiredSkills')
+            .populate('organization', 'name email phone address')
+            .populate('child', 'anonymizedCode age educationLevel');
+
+        res.json(updatedRequest);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
 module.exports = {
     getVolunteerApplications,
     updateApplicationStatus,
     seedVolunteers,
     getActivities,
     getMyApplications,
-    applyForActivity
+    applyForActivity,
+    createActivity,
+    submitVolunteerRequest,
+    getMyVolunteerRequests,
+    getOrgVolunteerRequests,
+    getVolunteerRequestById,
+    updateVolunteerRequestStatus
 };
+
+

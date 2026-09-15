@@ -45,11 +45,21 @@ const attendanceSchema = new mongoose.Schema({
     type: { type: String, enum: ['Present', 'Absence', 'Medical Leave'], default: 'Present' }
 }, { timestamps: true });
 
+const volunteerRequestSchema = new mongoose.Schema({
+    volunteer: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    organization: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization', required: true },
+    opportunity: { type: mongoose.Schema.Types.ObjectId, ref: 'Opportunity', required: true },
+    child: { type: mongoose.Schema.Types.ObjectId, ref: 'Child' },
+    message: { type: String, default: '' },
+    status: { type: String, enum: ['Pending', 'Approved', 'Rejected', 'Completed', 'Cancelled'], default: 'Pending' }
+}, { timestamps: true });
+
 module.exports = {
     Requirement: mongoose.model('Requirement', requirementSchema),
     Payment: mongoose.model('Payment', paymentSchema),
     VolunteerActivity: mongoose.model('VolunteerActivity', volunteerActivitySchema),
     VolunteerApplication: mongoose.model('VolunteerApplication', volunteerApplicationSchema),
+    VolunteerRequest: mongoose.model('VolunteerRequest', volunteerRequestSchema),
     AdoptionRequest: mongoose.model('AdoptionRequest', adoptionRequestSchema),
     Attendance: mongoose.model('Attendance', attendanceSchema)
 };

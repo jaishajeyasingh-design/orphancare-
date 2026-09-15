@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { getOpportunities, createOpportunity } from '../../services/opportunityService';
+import { submitVolunteerRequest, getMyVolunteerRequests } from '../../services/volunteerService';
 import { AuthContext } from '../../context/AuthContext';
-import { Award, Plus, Filter, AlertCircle, ArrowRight, UserCheck, BookOpen, Clock, X, CheckCircle2 } from 'lucide-react';
+import { Award, Plus, Filter, AlertCircle, ArrowRight, UserCheck, BookOpen, Clock, X, CheckCircle2, HeartHandshake, Check } from 'lucide-react';
 
 const OpportunitiesList = () => {
   const { user } = useContext(AuthContext);
@@ -10,6 +11,15 @@ const OpportunitiesList = () => {
   const [opportunities, setOpportunities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Volunteer Requests state
+  const [myRequests, setMyRequests] = useState([]);
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const [selectedOpp, setSelectedOpp] = useState(null);
+  const [requestMessage, setRequestMessage] = useState('');
+  const [requestSubmitting, setRequestSubmitting] = useState(false);
+  const [requestError, setRequestError] = useState(null);
+  const [requestSuccess, setRequestSuccess] = useState(null);
 
   // Filters
   const [statusFilter, setStatusFilter] = useState('');
@@ -43,6 +53,15 @@ const OpportunitiesList = () => {
 
       const data = await getOpportunities(params);
       setOpportunities(data);
+
+      if (user?.role === 'Volunteer') {
+        try {
+          const reqs = await getMyVolunteerRequests();
+          setMyRequests(reqs);
+        } catch (e) {
+          console.error('Failed to load volunteer requests', e);
+        }
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load opportunities catalog.');
     } finally {
@@ -53,6 +72,36 @@ const OpportunitiesList = () => {
   useEffect(() => {
     fetchOpportunities();
   }, [statusFilter, typeFilter]);
+
+  const handleOpenRequestModal = (opp) => {
+    setSelectedOpp(opp);
+    setRequestMessage('');
+    setRequestError(null);
+    setRequestSuccess(null);
+    setIsRequestModalOpen(true);
+  };
+
+  const handleVolunteerRequestSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedOpp) return;
+    try {
+      setRequestSubmitting(true);
+      setRequestError(null);
+      await submitVolunteerRequest({
+        opportunityId: selectedOpp._id,
+        message: requestMessage
+      });
+      setRequestSuccess('Volunteer request submitted successfully!');
+      setTimeout(() => {
+        setIsRequestModalOpen(false);
+        fetchOpportunities();
+      }, 1500);
+    } catch (err) {
+      setRequestError(err.response?.data?.message || 'Failed to submit volunteer request.');
+    } finally {
+      setRequestSubmitting(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -309,15 +358,116 @@ const OpportunitiesList = () => {
                 </div>
               </div>
 
-              <Link
-                to={`/opportunities/${opp._id}`}
-                className="mt-2 flex items-center justify-center gap-2 w-full bg-slate-50 hover:bg-primary-50 text-slate-700 hover:text-primary-700 font-semibold py-2.5 rounded-xl border border-slate-200 transition-colors text-sm"
-              >
-                <span>View Specification</span>
-                <ArrowRight size={16} />
-              </Link>
+              <div className="mt-4 space-y-2">
+                {user?.role === 'Volunteer' && (
+                  (() => {
+                    const existingReq = myRequests.find(r => (r.opportunity?._id || r.opportunity) === opp._id);
+                    if (existingReq) {
+                      return (
+                        <div className={`w-full py-2 px-3 rounded-xl text-xs font-bold text-center flex items-center justify-center gap-1.5 ${
+                          existingReq.status === 'Approved' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                          existingReq.status === 'Pending' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                          'bg-slate-100 text-slate-600'
+                        }`}>
+                          <CheckCircle2 size={14} /> Request Status: {existingReq.status}
+                        </div>
+                      );
+                    }
+                    return (
+                      <button
+                        onClick={() => handleOpenRequestModal(opp)}
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
+                      >
+                        <HeartHandshake size={15} /> Request to Volunteer
+                      </button>
+                    );
+                  })()
+                )}
+
+                <Link
+                  to={`/opportunities/${opp._id}`}
+                  className="flex items-center justify-center gap-2 w-full bg-slate-50 hover:bg-primary-50 text-slate-700 hover:text-primary-700 font-semibold py-2.5 rounded-xl border border-slate-200 transition-colors text-sm"
+                >
+                  <span>View Specification</span>
+                  <ArrowRight size={16} />
+                </Link>
+              </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Volunteer Request Modal */}
+      {isRequestModalOpen && selectedOpp && (
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl border border-slate-200 w-full max-w-md shadow-xl overflow-hidden animate-in fade-in zoom-in-95">
+            <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+              <h3 className="font-bold text-slate-800 text-base flex items-center gap-2">
+                <HeartHandshake className="text-emerald-600" size={20} />
+                Submit Volunteer Request
+              </h3>
+              <button
+                onClick={() => setIsRequestModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleVolunteerRequestSubmit} className="p-6 space-y-4">
+              {requestError && (
+                <div className="bg-rose-50 border border-rose-200 text-rose-700 p-3 rounded-xl text-xs flex items-center gap-2">
+                  <AlertCircle size={16} className="shrink-0" />
+                  <span>{requestError}</span>
+                </div>
+              )}
+
+              {requestSuccess && (
+                <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 p-3 rounded-xl text-xs flex items-center gap-2">
+                  <CheckCircle2 size={16} className="shrink-0 text-emerald-600" />
+                  <span>{requestSuccess}</span>
+                </div>
+              )}
+
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs space-y-1">
+                <p className="font-bold text-slate-800 text-sm">{selectedOpp.title}</p>
+                <p className="text-slate-600">{selectedOpp.description}</p>
+                {selectedOpp.organization?.name && (
+                  <p className="text-primary-600 font-medium pt-1">Orphanage: {selectedOpp.organization.name}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
+                  Why would you like to volunteer? (Message)
+                </label>
+                <textarea
+                  rows={3}
+                  value={requestMessage}
+                  onChange={(e) => setRequestMessage(e.target.value)}
+                  placeholder="Share relevant experience, motivation, or availability details..."
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                />
+              </div>
+
+              <div className="pt-4 border-t border-slate-100 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsRequestModalOpen(false)}
+                  className="px-4 py-2 text-slate-600 hover:text-slate-800 font-medium text-sm rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={requestSubmitting}
+                  className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-medium px-5 py-2 rounded-xl text-sm transition-all"
+                >
+                  {requestSubmitting ? 'Submitting...' : 'Submit Request'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
