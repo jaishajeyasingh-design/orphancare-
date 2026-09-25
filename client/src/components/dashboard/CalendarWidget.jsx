@@ -30,10 +30,10 @@ const myEventsList = [
 
 const CalendarWidget = () => {
     return (
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm mt-6 w-full overflow-hidden">
-            <h2 className="text-lg font-bold text-slate-800 mb-6">Master Schedule</h2>
+        <div className="bg-white p-4.5 rounded-xl border border-[#E2E8F0] shadow-2xs w-full overflow-hidden">
+            <h2 className="text-base font-bold text-[#0F172A] mb-4">Master Schedule</h2>
             <div className="overflow-x-auto">
-                <div style={{ height: '450px', minWidth: '700px' }}>
+                <div style={{ height: '380px', minWidth: '650px' }}>
                     <Calendar
                         localizer={localizer}
                         events={myEventsList}

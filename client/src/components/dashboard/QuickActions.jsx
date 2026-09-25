@@ -4,22 +4,22 @@ import { Link } from 'react-router-dom';
 
 const QuickActions = () => {
     const actions = [
-        { title: 'Add Resident', icon: <UserPlus size={20} />, color: 'bg-blue-500', link: '/residents' },
-        { title: 'Post Requirement', icon: <Megaphone size={20} />, color: 'bg-purple-500', link: '/requirements' },
-        { title: 'Approve Volunteers', icon: <CheckCircle size={20} />, color: 'bg-emerald-500', link: '/volunteers' },
-        { title: 'View Donations', icon: <Wallet size={20} />, color: 'bg-rose-500', link: '/donations' }
+        { title: 'Add Resident', icon: <UserPlus size={20} className="text-[#2563EB]" />, iconBg: 'bg-[#EFF6FF]', btnBg: 'bg-[#EFF6FF]/60 hover:bg-[#EFF6FF] border-[#E2E8F0]', link: '/residents' },
+        { title: 'Post Requirement', icon: <Megaphone size={20} className="text-[#8B5CF6]" />, iconBg: 'bg-[#F5F3FF]', btnBg: 'bg-[#F5F3FF]/60 hover:bg-[#F5F3FF] border-[#E2E8F0]', link: '/requirements' },
+        { title: 'Approve Volunteers', icon: <CheckCircle size={20} className="text-[#10B981]" />, iconBg: 'bg-[#ECFDF5]', btnBg: 'bg-[#ECFDF5]/60 hover:bg-[#ECFDF5] border-[#E2E8F0]', link: '/volunteers' },
+        { title: 'View Donations', icon: <Wallet size={20} className="text-[#F43F5E]" />, iconBg: 'bg-[#FFF1F2]', btnBg: 'bg-[#FFF1F2]/60 hover:bg-[#FFF1F2] border-[#E2E8F0]', link: '/donations' }
     ];
 
     return (
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm mt-6">
-            <h2 className="text-lg font-bold text-slate-800 mb-4">Quick Actions</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-white p-4.5 rounded-xl border border-[#E2E8F0] shadow-2xs">
+            <h2 className="text-base font-bold text-[#0F172A] mb-3">Quick Actions</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {actions.map((action, idx) => (
-                    <Link key={idx} to={action.link} className="flex flex-col items-center justify-center p-4 rounded-xl border border-slate-100 bg-slate-50 hover:bg-slate-100 hover:border-slate-300 transition-all gap-3 overflow-hidden group">
-                        <div className={`p-3 rounded-full text-white ${action.color} group-hover:scale-110 transition-transform shadow-sm`}>
+                    <Link key={idx} to={action.link} className={`flex flex-col items-center justify-center p-3 rounded-lg border ${action.btnBg} transition-all duration-200 gap-2 overflow-hidden group hover:-translate-y-0.5 hover:shadow-2xs`}>
+                        <div className={`p-2.5 rounded-full ${action.iconBg} group-hover:scale-105 transition-transform`}>
                             {action.icon}
                         </div>
-                        <span className="text-sm font-medium text-slate-700">{action.title}</span>
+                        <span className="text-xs font-semibold text-[#0F172A]">{action.title}</span>
                     </Link>
                 ))}
             </div>

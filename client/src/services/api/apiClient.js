@@ -26,6 +26,8 @@ apiClient.interceptors.request.use((config) => {
       const parsed = JSON.parse(userInfo);
       if (isValidToken(parsed?.token)) {
         token = parsed.token;
+      } else if (isValidToken(parsed?.user?.token)) {
+        token = parsed.user.token;
       }
     } catch (e) {
       // ignore parse error

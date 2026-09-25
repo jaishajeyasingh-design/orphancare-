@@ -88,37 +88,37 @@ const AvailableChildren = () => {
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {children.map(child => (
-                        <div key={child._id} className="group bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                            <div className="h-48 bg-gradient-to-br from-indigo-500 to-primary-600 relative p-6 flex flex-col justify-end">
-                                <div className="absolute top-6 right-6 bg-white/20 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                        <div key={child._id} className="group bg-white rounded-3xl overflow-hidden border border-slate-200/90 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+                            <div className="h-44 bg-blue-50/80 border-b border-blue-100 relative p-6 flex flex-col justify-end">
+                                <div className="absolute top-5 right-5 bg-white text-blue-700 border border-blue-200 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-2xs">
                                     ID: #{child._id.slice(-5)}
                                 </div>
-                                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-primary-600 shadow-lg mb-2">
-                                    <User size={32} />
+                                <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-blue-600 shadow-xs mb-2 border border-blue-100">
+                                    <User size={28} />
                                 </div>
-                                <h3 className="text-2xl font-bold text-white tracking-tight">{child.name}</h3>
-                                <div className="flex items-center gap-2 text-primary-50 font-medium text-sm mt-1">
+                                <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight">{child.name}</h3>
+                                <div className="flex items-center gap-2 text-slate-500 font-medium text-xs mt-0.5">
                                     <span>Age: {child.age} yrs</span>
                                     <span>•</span>
-                                    <span>Healthy Profile</span>
+                                    <span>Verified Profile</span>
                                 </div>
                             </div>
                             
                             <div className="p-6">
-                                <div className="space-y-4 mb-6">
+                                <div className="space-y-3 mb-6">
                                     <div className="flex items-center gap-3 text-sm text-slate-600">
-                                        <Activity size={18} className="text-primary-500" />
-                                        <span className="font-medium">Condition:</span> {child.healthCondition}
+                                        <Activity size={18} className="text-blue-600" />
+                                        <span className="font-semibold text-slate-700">Condition:</span> {child.healthCondition}
                                     </div>
                                     <div className="flex items-center gap-3 text-sm text-slate-600">
                                         <Heart size={18} className="text-rose-500" />
-                                        <span className="font-medium">Eligibility:</span> Ready for Adoption
+                                        <span className="font-semibold text-slate-700">Eligibility:</span> Ready for Adoption
                                     </div>
                                 </div>
                                 
                                 <button 
                                     onClick={() => handleOpenApply(child)}
-                                    className="w-full bg-slate-900 group-hover:bg-primary-600 text-white font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2 transition-colors"
+                                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl flex items-center justify-center gap-2 transition-colors shadow-xs"
                                 >
                                     Start Adoption Process
                                 </button>

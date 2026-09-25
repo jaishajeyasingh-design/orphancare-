@@ -153,15 +153,15 @@ const ImpactDashboard = () => {
   return (
     <div className="space-y-8 pb-12">
       {/* SECTION 1 — DASHBOARD HEADER */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-gradient-to-r from-indigo-900 via-indigo-800 to-blue-900 p-6 sm:p-8 rounded-2xl text-white shadow-xl">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-blue-50/70 border border-blue-200/80 p-6 sm:p-8 rounded-3xl text-slate-900 shadow-xs">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-indigo-500/20 backdrop-blur-md rounded-xl border border-indigo-400/30">
-              <TrendingUp className="w-7 h-7 text-indigo-300" />
+            <div className="p-2.5 bg-blue-100 rounded-xl border border-blue-200 text-blue-600">
+              <TrendingUp className="w-7 h-7" />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Impact Dashboard</h1>
-              <p className="text-indigo-200 text-sm sm:text-base mt-1">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Impact Dashboard</h1>
+              <p className="text-slate-600 text-sm sm:text-base mt-0.5">
                 Measure how OrphanCare AI turns individual needs into meaningful opportunities, development, and progress.
               </p>
             </div>
@@ -171,24 +171,24 @@ const ImpactDashboard = () => {
         {/* Filter and Refresh Controls */}
         <div className="flex items-center gap-3 self-start lg:self-center">
           <div className="relative flex items-center">
-            <Calendar className="w-4 h-4 text-indigo-300 absolute left-3 pointer-events-none" />
+            <Calendar className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
             <select
               value={timeframe}
               onChange={handleTimeframeChange}
-              className="bg-indigo-950/60 text-white pl-9 pr-8 py-2.5 rounded-xl border border-indigo-500/30 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 appearance-none cursor-pointer"
+              className="bg-white text-slate-800 pl-9 pr-8 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer shadow-2xs"
             >
-              <option value="all" className="bg-gray-900 text-white">All Time</option>
-              <option value="7d" className="bg-gray-900 text-white">Last 7 Days</option>
-              <option value="30d" className="bg-gray-900 text-white">Last 30 Days</option>
-              <option value="90d" className="bg-gray-900 text-white">Last 90 Days</option>
+              <option value="all">All Time</option>
+              <option value="7d">Last 7 Days</option>
+              <option value="30d">Last 30 Days</option>
+              <option value="90d">Last 90 Days</option>
             </select>
-            <ChevronRight className="w-4 h-4 text-indigo-300 absolute right-2.5 rotate-90 pointer-events-none" />
+            <ChevronRight className="w-4 h-4 text-slate-400 absolute right-2.5 rotate-90 pointer-events-none" />
           </div>
 
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 active:bg-white/30 text-white px-4 py-2.5 rounded-xl border border-white/20 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-white/40 disabled:opacity-50"
+            className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-2xs disabled:opacity-50"
             title="Refresh impact metrics"
           >
             <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />

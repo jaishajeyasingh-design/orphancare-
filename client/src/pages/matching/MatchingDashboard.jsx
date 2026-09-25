@@ -141,18 +141,18 @@ const MatchingDashboard = () => {
   return (
     <div className="space-y-8 animate-fade-in pb-16">
       {/* Top Banner Header */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white rounded-3xl p-8 shadow-xl relative overflow-hidden">
-        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-white/5 backdrop-blur-3xl transform skew-x-12"></div>
+      <div className="bg-purple-50/70 border border-purple-200/80 text-slate-900 rounded-3xl p-8 shadow-xs relative overflow-hidden">
+        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-blue-50/40 transform skew-x-12 pointer-events-none"></div>
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="text-amber-400" size={24} fill="currentColor" />
-              <span className="bg-amber-400/20 text-amber-300 text-xs font-semibold px-3 py-1 rounded-full border border-amber-400/30">
+              <Sparkles className="text-purple-600" size={24} fill="currentColor" />
+              <span className="bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-full border border-purple-200">
                 Core Hackathon USP
               </span>
             </div>
-            <h1 className="text-3xl font-extrabold tracking-tight">AI Intelligent Matching Engine</h1>
-            <p className="text-slate-300 text-sm mt-1 max-w-xl">
+            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">AI Intelligent Matching Engine</h1>
+            <p className="text-slate-600 text-sm mt-1 max-w-xl">
               Automated alignment between child support needs and available donor/volunteer opportunities with transparent AI scoring and Human-in-the-Loop review.
             </p>
           </div>
@@ -161,7 +161,7 @@ const MatchingDashboard = () => {
             <button
               onClick={handleTriggerMatching}
               disabled={triggering}
-              className="flex items-center gap-2.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 disabled:opacity-50 text-white font-bold px-6 py-3.5 rounded-2xl shadow-lg hover:shadow-amber-500/25 transition-all text-sm shrink-0"
+              className="flex items-center gap-2.5 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white font-bold px-6 py-3.5 rounded-2xl shadow-sm transition-all text-sm shrink-0"
             >
               {triggering ? (
                 <>
@@ -419,16 +419,16 @@ const MatchingDashboard = () => {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
                       
                       {/* Score Badge Widget */}
-                      <div className="bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-2xl p-5 text-center flex flex-col items-center justify-center space-y-2 border border-slate-800 shadow-md">
-                        <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">AI Match Fit</span>
-                        <div className="text-4xl font-extrabold text-white tracking-tight">{confidencePercent}%</div>
-                        <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden border border-slate-700 mt-1">
+                      <div className="bg-purple-50 border border-purple-200 text-slate-900 rounded-2xl p-5 text-center flex flex-col items-center justify-center space-y-1.5 shadow-2xs">
+                        <span className="text-xs font-bold text-purple-700 uppercase tracking-wider">AI Match Fit</span>
+                        <div className="text-4xl font-extrabold text-purple-700 tracking-tight">{confidencePercent}%</div>
+                        <div className="w-full bg-purple-100 h-2 rounded-full overflow-hidden border border-purple-200 mt-1">
                           <div
-                            className="bg-gradient-to-r from-amber-400 to-emerald-400 h-full rounded-full transition-all duration-500"
+                            className="bg-purple-600 h-full rounded-full transition-all duration-500"
                             style={{ width: `${confidencePercent}%` }}
                           ></div>
                         </div>
-                        <span className="text-[10px] text-slate-400 font-medium">Deterministic Confidence Score</span>
+                        <span className="text-[10px] text-slate-500 font-medium">Deterministic Confidence Score</span>
                       </div>
 
                       {/* "Why This Match?" AI Rationale Box */}

@@ -65,9 +65,57 @@ const submitAdoptionRequest = async (req, res) => {
 const getMyRequests = async (req, res) => {
     try {
         const requests = await AdoptionRequest.find({ userId: req.user._id })
-            .populate('residentId', 'name age gender healthStatus')
+            .populate('residentId', 'name age gender healthCondition status')
             .sort({ createdAt: -1 });
         res.json(requests);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
+// @desc    Get all adoption requests for Admin
+// @route   GET /api/adopter/admin/requests
+// @access  Private (Admin)
+const getAllAdoptionRequests = async (req, res) => {
+    try {
+        const requests = await AdoptionRequest.find()
+            .populate('userId', 'name email phone')
+            .populate('residentId', 'name age category status adoptionEligibility')
+            .sort({ createdAt: -1 });
+        res.json(requests);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
+// @desc    Update adoption request status (Admin)
+// @route   PUT /api/adopter/admin/requests/:id/status
+// @access  Private (Admin)
+const updateAdoptionRequestStatus = async (req, res) => {
+    try {
+        const { status } = req.body; // 'Approved' or 'Rejected'
+        const request = await AdoptionRequest.findById(req.params.id);
+
+        if (!request) {
+            return res.status(404).json({ message: 'Adoption request not found' });
+        }
+
+        request.status = status || request.status;
+        await request.save();
+
+        if (status === 'Approved' && request.residentId) {
+            // Update child resident status to Adopted and set adoptionEligibility to false
+            await Resident.findByIdAndUpdate(request.residentId, {
+                status: 'Adopted',
+                adoptionEligibility: false
+            });
+        }
+
+        const updatedRequest = await AdoptionRequest.findById(req.params.id)
+            .populate('userId', 'name email')
+            .populate('residentId', 'name age status adoptionEligibility');
+
+        res.json(updatedRequest);
     } catch (error) {
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
@@ -76,5 +124,8 @@ const getMyRequests = async (req, res) => {
 module.exports = {
     getAvailableChildren,
     submitAdoptionRequest,
-    getMyRequests
+    getMyRequests,
+    getAllAdoptionRequests,
+    updateAdoptionRequestStatus
 };
+

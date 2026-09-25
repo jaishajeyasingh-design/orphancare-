@@ -109,29 +109,29 @@ const ChildDetail = () => {
       </div>
 
       {/* Hero Header Card */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white rounded-3xl p-8 shadow-xl relative overflow-hidden">
-        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-white/5 backdrop-blur-3xl transform skew-x-12"></div>
+      <div className="bg-white border border-slate-200/90 rounded-3xl p-8 shadow-xs relative overflow-hidden">
+        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-blue-50/50 transform skew-x-12 pointer-events-none"></div>
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <span className="bg-primary-500/20 text-primary-300 text-xs font-semibold px-3 py-1 rounded-full border border-primary-400/30">
+              <span className="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-full border border-blue-200">
                 Anonymized Record
               </span>
               <span
-                className={`text-xs font-semibold px-3 py-1 rounded-full border ${
+                className={`text-xs font-bold px-3 py-1 rounded-full border ${
                   child.status === 'Active'
-                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/30'
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                     : child.status === 'Matched'
-                    ? 'bg-blue-500/20 text-blue-300 border-blue-400/30'
-                    : 'bg-purple-500/20 text-purple-300 border-purple-400/30'
+                    ? 'bg-blue-50 text-blue-700 border-blue-200'
+                    : 'bg-purple-50 text-purple-700 border-purple-200'
                 }`}
               >
                 {child.status}
               </span>
             </div>
 
-            <h1 className="text-3xl font-extrabold tracking-tight">{child.anonymizedCode}</h1>
-            <p className="text-slate-400 text-sm mt-1">
+            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">{child.anonymizedCode}</h1>
+            <p className="text-slate-500 text-sm mt-1">
               Age {child.age} • {child.gender || 'Unspecified'} • Education: {child.educationLevel || 'N/A'}
             </p>
           </div>
@@ -141,7 +141,7 @@ const ChildDetail = () => {
             <button
               onClick={handleRunAINeedsAnalysis}
               disabled={analyzing}
-              className="flex items-center gap-2.5 bg-gradient-to-r from-primary-500 to-indigo-600 hover:from-primary-600 hover:to-indigo-700 disabled:opacity-50 text-white font-semibold px-6 py-3 rounded-2xl shadow-lg hover:shadow-primary-500/25 transition-all text-sm shrink-0"
+              className="flex items-center gap-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold px-6 py-3 rounded-2xl shadow-sm transition-all text-sm shrink-0"
             >
               {analyzing ? (
                 <>

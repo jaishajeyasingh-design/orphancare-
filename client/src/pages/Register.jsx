@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import ThemeToggle from '../components/ui/ThemeToggle';
 import { Heart } from 'lucide-react';
 
 const Register = () => {
@@ -27,18 +28,25 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center animate-fade-in" style={{ minHeight: '100vh', background: 'var(--bg-color)', padding: '1rem' }}>
-      <div className="card glass" style={{ width: '100%', maxWidth: '400px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-           <Heart fill="var(--primary)" size={48} style={{ margin: '0 auto', color: 'var(--primary)', marginBottom: '1rem' }} />
-           <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Join OrphanCare+</h2>
-           <p style={{ color: 'var(--text-muted)' }}>Create an account to make a difference</p>
+    <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 p-4 relative transition-colors duration-200">
+      <div className="absolute top-6 right-6">
+        <ThemeToggle />
+      </div>
+      <div className="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl p-8 space-y-6">
+        <div className="text-center">
+           <Heart fill="currentColor" size={48} className="mx-auto text-primary-600 dark:text-primary-500 mb-3" />
+           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Join OrphanCare+</h2>
+           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Create an account to make a difference</p>
         </div>
 
-        {error && <div style={{ background: '#fef2f2', color: 'var(--danger)', padding: '0.75rem', borderRadius: 'var(--radius-md)', marginBottom: '1rem', fontSize: '0.875rem' }}>{error}</div>}
+        {error && (
+          <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-300 text-xs rounded-xl font-medium">
+            {error}
+          </div>
+        )}
 
-        <form onSubmit={submitHandler}>
-          <div className="form-group">
+        <form onSubmit={submitHandler} className="space-y-4">
+          <div>
             <label className="form-label">Full Name</label>
             <input 
               type="text" 
@@ -50,7 +58,7 @@ const Register = () => {
             />
           </div>
 
-          <div className="form-group">
+          <div>
             <label className="form-label">Email Address</label>
             <input 
               type="email" 
@@ -62,9 +70,9 @@ const Register = () => {
             />
           </div>
 
-          <div className="form-group">
+          <div>
             <label className="form-label">Role</label>
-            <select className="form-select" value={role} onChange={(e) => setRole(e.target.value)}>
+            <select className="form-input" value={role} onChange={(e) => setRole(e.target.value)}>
               <option value="Volunteer">Volunteer</option>
               <option value="Donor">Donor</option>
               <option value="Adopter">Adopter</option>
@@ -73,7 +81,7 @@ const Register = () => {
             </select>
           </div>
           
-          <div className="form-group">
+          <div>
             <label className="form-label">Password</label>
             <input 
               type="password" 
@@ -85,13 +93,13 @@ const Register = () => {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem', padding: '0.75rem' }} disabled={loading}>
+          <button type="submit" className="btn-primary w-full py-3 mt-2 font-semibold" disabled={loading}>
             {loading ? 'Registering...' : 'Register'}
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem' }}>
-          Already have an account? <Link to="/login" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: '500' }}>Login</Link>
+        <p className="text-center text-xs text-slate-500 dark:text-slate-400">
+          Already have an account? <Link to="/login" className="text-primary-600 dark:text-primary-400 font-semibold hover:underline">Login</Link>
         </p>
       </div>
     </div>

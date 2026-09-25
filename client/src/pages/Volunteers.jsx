@@ -125,7 +125,7 @@ const Volunteers = () => {
                         <button 
                             onClick={handleSeedData}
                             disabled={seeding}
-                            className="flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition disabled:opacity-50 text-sm font-medium"
+                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition disabled:opacity-50 text-sm font-medium"
                         >
                             {seeding ? <Loader2 className="animate-spin" size={18} /> : <Database size={18} />}
                             Seed Demo Data

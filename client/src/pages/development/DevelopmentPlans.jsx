@@ -146,18 +146,18 @@ const DevelopmentPlans = () => {
   return (
     <div className="space-y-8 animate-fade-in pb-16">
       {/* Top Banner Header */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-8 shadow-xl relative overflow-hidden">
-        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-white/5 backdrop-blur-3xl transform skew-x-12"></div>
+      <div className="bg-purple-50/70 border border-purple-200/80 text-slate-900 rounded-3xl p-8 shadow-xs relative overflow-hidden">
+        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-blue-50/40 transform skew-x-12 pointer-events-none"></div>
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <TrendingUp className="text-primary-400" size={24} />
-              <span className="bg-primary-500/20 text-primary-300 text-xs font-semibold px-3 py-1 rounded-full border border-primary-400/30">
+              <TrendingUp className="text-purple-600" size={24} />
+              <span className="bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-full border border-purple-200">
                 Growth Pathways
               </span>
             </div>
-            <h1 className="text-3xl font-extrabold tracking-tight">AI Personalized Development Plans</h1>
-            <p className="text-slate-300 text-sm mt-1 max-w-xl">
+            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">AI Personalized Development Plans</h1>
+            <p className="text-slate-600 text-sm mt-1 max-w-xl">
               Building long-term independence by translating child aspirations, skills, and approved support into measurable growth milestones.
             </p>
           </div>
@@ -166,7 +166,7 @@ const DevelopmentPlans = () => {
             <button
               onClick={handleGeneratePlan}
               disabled={generating}
-              className="flex items-center gap-2.5 bg-gradient-to-r from-primary-500 to-indigo-600 hover:from-primary-600 hover:to-indigo-700 disabled:opacity-50 text-white font-bold px-6 py-3.5 rounded-2xl shadow-lg hover:shadow-primary-500/25 transition-all text-sm shrink-0"
+              className="flex items-center gap-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold px-6 py-3.5 rounded-2xl shadow-sm transition-all text-sm shrink-0"
             >
               {generating ? (
                 <>
@@ -377,7 +377,7 @@ const DevelopmentPlans = () => {
                 >
                   <div className="space-y-2 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                      <span className="w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
                         {idx + 1}
                       </span>
                       <span className="text-xs font-semibold text-slate-500 flex items-center gap-1">

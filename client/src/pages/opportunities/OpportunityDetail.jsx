@@ -80,32 +80,32 @@ const OpportunityDetail = () => {
       </div>
 
       {/* Hero Header */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white rounded-3xl p-8 shadow-xl relative overflow-hidden">
-        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-white/5 backdrop-blur-3xl transform skew-x-12"></div>
+      <div className="bg-blue-50/70 border border-blue-200/80 text-slate-900 rounded-3xl p-8 shadow-xs relative overflow-hidden">
+        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-purple-50/40 transform skew-x-12 pointer-events-none"></div>
         <div className="relative z-10 space-y-4">
           <div className="flex flex-wrap items-center gap-3">
             <span className={`text-xs font-bold px-3 py-1 rounded-full border ${getTypeBadge(opportunity.type)}`}>
               {opportunity.type}
             </span>
             <span
-              className={`text-xs font-semibold px-3 py-1 rounded-full border ${
+              className={`text-xs font-bold px-3 py-1 rounded-full border ${
                 opportunity.status === 'Open'
-                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/30'
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                   : opportunity.status === 'Assigned'
-                  ? 'bg-blue-500/20 text-blue-300 border-blue-400/30'
-                  : 'bg-purple-500/20 text-purple-300 border-purple-400/30'
+                  ? 'bg-blue-50 text-blue-700 border-blue-200'
+                  : 'bg-purple-50 text-purple-700 border-purple-200'
               }`}
             >
               Status: {opportunity.status}
             </span>
           </div>
 
-          <h1 className="text-3xl font-extrabold tracking-tight">{opportunity.title}</h1>
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">{opportunity.title}</h1>
 
           {opportunity.sponsor?.name && (
-            <p className="text-slate-400 text-sm flex items-center gap-2">
-              <UserCheck size={16} className="text-primary-400" /> Sponsored by{' '}
-              <strong className="text-white font-semibold">{opportunity.sponsor.name}</strong> ({opportunity.sponsor.role})
+            <p className="text-slate-600 text-sm flex items-center gap-2">
+              <UserCheck size={16} className="text-blue-600" /> Sponsored by{' '}
+              <strong className="text-slate-900 font-semibold">{opportunity.sponsor.name}</strong> ({opportunity.sponsor.role})
             </p>
           )}
         </div>

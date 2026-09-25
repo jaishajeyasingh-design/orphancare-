@@ -36,36 +36,39 @@ const MainLayout = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 animate-fade-in font-sans transition-colors duration-200">
+    <div className="flex min-h-screen bg-[#F8FAFC] text-slate-900 animate-fade-in font-sans transition-colors duration-200">
       {/* Sidebar */}
-      <aside className="w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col fixed h-full z-10 shadow-sm transition-colors duration-200">
+      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col fixed h-full z-10 shadow-xs transition-colors duration-200">
         <div className="p-6 pb-4">
-          <Link to="/" className="flex items-center gap-2 mb-1">
-            <Heart className="text-primary-600 dark:text-primary-500" size={28} fill="currentColor" />
+          <Link to="/" className="flex items-center gap-2.5 mb-1">
+            <div className="w-9 h-9 bg-blue-50 border border-blue-200 rounded-xl flex items-center justify-center text-blue-600 shadow-2xs">
+              <Heart size={20} fill="currentColor" />
+            </div>
             <div>
-              <span className="font-bold text-xl text-slate-800 dark:text-white tracking-tight">OrphanCare+</span>
-              <p className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold -mt-1">Home Portal</p>
+              <span className="font-extrabold text-xl text-slate-900 tracking-tight">OrphanCare+</span>
+              <p className="text-[10px] uppercase tracking-wider text-slate-400 font-bold -mt-0.5">Home Portal</p>
             </div>
           </Link>
-          <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-3">
-            Role: <span className="text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-blue-950/60 px-2 py-0.5 rounded-md ml-1 border border-primary-100 dark:border-blue-900/50">{user.role}</span>
+          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-4 flex items-center gap-1.5">
+            <span>Role:</span>
+            <span className="text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-md font-bold border border-blue-100">{user.role}</span>
           </div>
         </div>
 
-        <nav className="flex-1 px-4 mt-6 space-y-1 overflow-y-auto">
+        <nav className="flex-1 px-4 mt-4 space-y-1.5 overflow-y-auto">
           {links.map((link) => {
             const isActive = location.pathname === link.path;
             return (
               <Link 
                 key={link.path} 
                 to={link.path} 
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${
+                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all ${
                   isActive 
-                    ? 'bg-primary-50 dark:bg-blue-950/50 text-primary-700 dark:text-primary-300 border border-primary-100/50 dark:border-blue-800/50' 
-                    : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white'
+                    ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600 font-semibold shadow-2xs' 
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-blue-600'
                 }`}
               >
-                <span className={isActive ? 'text-primary-600 dark:text-primary-400' : 'text-slate-400 dark:text-slate-500'}>
+                <span className={isActive ? 'text-blue-600' : 'text-slate-400'}>
                   {link.icon}
                 </span>
                 {link.name}
@@ -74,12 +77,12 @@ const MainLayout = () => {
           })}
         </nav>
 
-        <div className="p-4 border-t border-slate-100 dark:border-slate-700/60">
+        <div className="p-4 border-t border-slate-100">
           <button 
             onClick={logout}
-            className="flex items-center gap-3 px-3 py-2 w-full rounded-lg font-medium text-slate-600 dark:text-slate-300 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
+            className="flex items-center gap-3 px-3.5 py-2.5 w-full rounded-xl font-medium text-slate-600 hover:bg-rose-50 hover:text-rose-600 text-sm transition-colors"
           >
-            <LogOut size={20} className="text-slate-400 dark:text-slate-500 group-hover:text-rose-500" />
+            <LogOut size={18} className="text-slate-400 group-hover:text-rose-600" />
             Logout
           </button>
         </div>
@@ -88,24 +91,24 @@ const MainLayout = () => {
       {/* Main Content Area */}
       <div className="flex-1 ml-64 flex flex-col min-h-screen">
         {/* Top Navbar */}
-        <header className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md sticky top-0 z-10 border-b border-slate-200 dark:border-slate-700 px-8 py-4 flex justify-between items-center shadow-sm transition-colors duration-200">
+        <header className="bg-white sticky top-0 z-10 border-b border-slate-200 px-8 py-4 flex justify-between items-center shadow-2xs transition-colors duration-200">
            <div>
-               <h2 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Welcome back, {user.name}</h2>
-               <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">OrphanCare Residential Home Operations & Live Overview</p>
+               <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Welcome back, {user.name}</h2>
+               <p className="text-sm text-slate-500 mt-0.5">OrphanCare Residential Home Operations & Live Overview</p>
            </div>
-           <div className="flex items-center gap-4 sm:gap-6">
-               <span className="hidden lg:inline-block bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-4 py-1.5 rounded-full text-sm font-medium text-slate-600 dark:text-slate-300 shadow-sm">
+           <div className="flex items-center gap-4 sm:gap-5">
+               <span className="hidden lg:inline-block bg-white border border-slate-200 px-4 py-1.5 rounded-full text-xs font-semibold text-slate-600 shadow-2xs">
                    {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                </span>
 
                {/* Theme Switcher Toggle */}
                <ThemeToggle />
 
-               <button className="relative p-2 text-slate-400 dark:text-slate-300 hover:text-slate-600 dark:hover:text-white transition-colors bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-full shadow-sm">
-                 <Bell size={20} />
-                 <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-rose-500 border-2 border-white dark:border-slate-800 rounded-full"></span>
+               <button className="relative p-2 text-slate-500 hover:text-slate-800 transition-colors bg-white border border-slate-200 rounded-full shadow-2xs">
+                 <Bell size={18} />
+                 <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-rose-500 border-2 border-white rounded-full"></span>
                </button>
-               <div className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/60 text-primary-700 dark:text-primary-300 font-bold border border-primary-200 dark:border-primary-700 shadow-sm flex items-center justify-center">
+               <div className="w-9 h-9 rounded-full bg-blue-50 text-blue-700 font-extrabold border border-blue-200 shadow-2xs flex items-center justify-center text-sm">
                  {user.name.charAt(0).toUpperCase()}
                </div>
            </div>
@@ -121,3 +124,4 @@ const MainLayout = () => {
 };
 
 export default MainLayout;
+

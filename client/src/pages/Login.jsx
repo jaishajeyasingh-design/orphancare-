@@ -1,11 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { Heart } from 'lucide-react';
+import ThemeToggle from '../components/ui/ThemeToggle';
+import { Heart, Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const { login, user, error, loading } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -25,18 +27,25 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center animate-fade-in" style={{ minHeight: '100vh', background: 'var(--bg-color)', padding: '1rem' }}>
-      <div className="card glass" style={{ width: '100%', maxWidth: '400px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-           <Heart fill="var(--primary)" size={48} style={{ margin: '0 auto', color: 'var(--primary)', marginBottom: '1rem' }} />
-           <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Welcome Back</h2>
-           <p style={{ color: 'var(--text-muted)' }}>Login to OrphanCare+</p>
+    <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 p-4 relative transition-colors duration-200">
+      <div className="absolute top-6 right-6">
+        <ThemeToggle />
+      </div>
+      <div className="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl p-8 space-y-6">
+        <div className="text-center">
+           <Heart fill="currentColor" size={48} className="mx-auto text-primary-600 dark:text-primary-500 mb-3" />
+           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Welcome Back</h2>
+           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Login to OrphanCare+</p>
         </div>
 
-        {error && <div style={{ background: '#fef2f2', color: 'var(--danger)', padding: '0.75rem', borderRadius: 'var(--radius-md)', marginBottom: '1rem', fontSize: '0.875rem' }}>{error}</div>}
+        {error && (
+          <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-300 text-xs rounded-xl font-medium">
+            {error}
+          </div>
+        )}
 
-        <form onSubmit={submitHandler}>
-          <div className="form-group">
+        <form onSubmit={submitHandler} className="space-y-4">
+          <div>
             <label className="form-label">Email Address</label>
             <input 
               type="email" 
@@ -48,25 +57,45 @@ const Login = () => {
             />
           </div>
           
-          <div className="form-group">
+          <div>
             <label className="form-label">Password</label>
-            <input 
-              type="password" 
-              className="form-input" 
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
-              required 
-              placeholder="Enter your password"
-            />
+            <div className="relative">
+              <input 
+                type={showPassword ? 'text' : 'password'} 
+                className="form-input pr-10" 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+                required 
+                placeholder="Enter your password"
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none transition-colors"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                title={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem', padding: '0.75rem' }} disabled={loading}>
+          <div className="flex justify-end">
+            <Link 
+              to="/forgot-password" 
+              className="text-xs text-primary-600 dark:text-primary-400 font-medium hover:underline"
+            >
+              Forgot Password?
+            </Link>
+          </div>
+
+          <button type="submit" className="btn-primary w-full py-3 mt-2 font-semibold" disabled={loading}>
             {loading ? 'Logging in...' : 'Sign In'}
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem' }}>
-          Don't have an account? <Link to="/register" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: '500' }}>Register</Link>
+        <p className="text-center text-xs text-slate-500 dark:text-slate-400">
+          Don't have an account? <Link to="/register" className="text-primary-600 dark:text-primary-400 font-semibold hover:underline">Register</Link>
         </p>
       </div>
     </div>

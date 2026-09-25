@@ -54,9 +54,10 @@ const ProgressTracking = () => {
       try {
         setLoadingChildren(true);
         const data = await getChildren();
-        setChildrenList(data);
-        if (data.length > 0) {
-          setSelectedChildId(data[0]._id);
+        const childrenArray = Array.isArray(data) ? data : (data?.data || data?.children || []);
+        setChildrenList(childrenArray);
+        if (childrenArray.length > 0) {
+          setSelectedChildId(childrenArray[0]._id);
         }
       } catch (err) {
         setActionError('Failed to load child directory.');
@@ -254,18 +255,18 @@ const ProgressTracking = () => {
   return (
     <div className="space-y-8 animate-fade-in pb-16">
       {/* Top Banner Header */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-8 shadow-xl relative overflow-hidden">
-        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-white/5 backdrop-blur-3xl transform skew-x-12"></div>
+      <div className="bg-blue-50/70 border border-blue-200/80 text-slate-900 rounded-3xl p-8 shadow-xs relative overflow-hidden">
+        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-purple-50/40 transform skew-x-12 pointer-events-none"></div>
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <FileText className="text-primary-400" size={24} />
-              <span className="bg-primary-500/20 text-primary-300 text-xs font-semibold px-3 py-1 rounded-full border border-primary-400/30">
+              <FileText className="text-blue-600" size={24} />
+              <span className="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full border border-blue-200">
                 Evaluation & Growth
               </span>
             </div>
-            <h1 className="text-3xl font-extrabold tracking-tight">Child Progress Tracking</h1>
-            <p className="text-slate-300 text-sm mt-1 max-w-xl">
+            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Child Progress Tracking</h1>
+            <p className="text-slate-600 text-sm mt-1 max-w-xl">
               Measuring meaningful growth, ratings, and feedback against each child's personalized development goals.
             </p>
           </div>
@@ -273,7 +274,7 @@ const ProgressTracking = () => {
           {selectedChildId && (
             <button
               onClick={() => setIsLogModalOpen(true)}
-              className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-bold px-6 py-3.5 rounded-2xl shadow-lg hover:shadow-primary-500/25 transition-all text-sm shrink-0"
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3.5 rounded-2xl shadow-sm transition-all text-sm shrink-0"
             >
               <Plus size={18} />
               Log Progress Update
