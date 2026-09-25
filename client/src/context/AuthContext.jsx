@@ -12,7 +12,11 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const userInfo = localStorage.getItem('userInfo');
     if (userInfo) {
-      setUser(JSON.parse(userInfo));
+      try {
+        setUser(JSON.parse(userInfo));
+      } catch (e) {
+        localStorage.removeItem('userInfo');
+      }
     }
     setLoading(false);
   }, []);
@@ -51,6 +55,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('userInfo');
+    localStorage.removeItem('token');
     setUser(null);
   };
 

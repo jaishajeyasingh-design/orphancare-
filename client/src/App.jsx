@@ -5,6 +5,8 @@ import MainLayout from './layouts/MainLayout';
 // Existing Pages
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import ManageResidents from './pages/ManageResidents';
 import Dashboard from './pages/Dashboard';
 import Requirements from './pages/Requirements';
@@ -49,6 +51,8 @@ function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
       
       <Route path="/" element={<MainLayout />}>
         <Route index element={<Navigate to="/dashboard" replace />} />

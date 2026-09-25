@@ -1,6 +1,7 @@
-# OrphanCare+ Management System
+# OrphanCare+ Residential Center Portal
 
-OrphanCare+ is a comprehensive, full-stack residential care management system designed to streamline operations, facilitate donations, and manage volunteer and adoption processes efficiently. 
+OrphanCare+ is a dedicated, full-stack residential care management portal for a single orphanage home. It streamlines internal home operations, resident (orphan children & elderly) management, donor contributions, volunteer activity drives, guardian ward updates, and adoption application workflows in one centralized hub.
+
 
 ## 🌟 Features
 

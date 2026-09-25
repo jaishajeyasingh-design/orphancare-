@@ -2,7 +2,7 @@ const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const { Payment } = require('../models/MiscModels');
 
-// Logic to check for keys or use mock
+// Helper to check if keys exist or if running in test mock mode
 const isMock = !process.env.RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID === 'rzp_test_mock';
 
 let razorpayInstance;
@@ -20,8 +20,8 @@ const createOrder = async (req, res) => {
     try {
         const { amount, currency = 'INR' } = req.body;
 
-        if (!amount) {
-            return res.status(400).json({ message: 'Amount is required' });
+        if (!amount || Number(amount) <= 0) {
+            return res.status(400).json({ message: 'Valid amount greater than zero is required' });
         }
 
         if (isMock) {
@@ -29,21 +29,21 @@ const createOrder = async (req, res) => {
             return res.json({
                 mock: true,
                 id: `order_mock_${Date.now()}`,
-                amount: Math.round(amount * 100),
+                amount: Math.round(Number(amount) * 100),
                 currency,
                 key: 'rzp_test_mock'
             });
         }
 
         const options = {
-            amount: Math.round(amount * 100), // Razorpay expects paise/cents
+            amount: Math.round(Number(amount) * 100), // Razorpay expects paise/cents
             currency,
             receipt: `receipt_order_${Date.now()}`,
         };
 
         const order = await razorpayInstance.orders.create(options);
         
-        // Return order and the public key for the frontend
+        // Return order and the public key for frontend checkout initialization
         res.json({
             ...order,
             key: process.env.RAZORPAY_KEY_ID
@@ -64,25 +64,41 @@ const verifyPayment = async (req, res) => {
             razorpay_payment_id, 
             razorpay_signature,
             amount,
-            type
+            type = 'Donation'
         } = req.body;
 
-        // 1. Create the verification string
+        if (!amount || Number(amount) <= 0) {
+            return res.status(400).json({ message: 'Valid payment amount is required for verification' });
+        }
+
+        const txnId = razorpay_payment_id || `MOCK-PAY-${Date.now()}`;
+
+        // Idempotency check: prevent duplicate payment recording
+        const existing = await Payment.findOne({ transactionId: txnId });
+        if (existing) {
+            const populated = await Payment.findById(existing._id).populate('userId', 'name email');
+            return res.json({ status: 'ok', message: 'Payment already verified and recorded', data: populated });
+        }
+
         const secret = process.env.RAZORPAY_KEY_SECRET;
         
-        // If keys are missing and it's a mock request, we can still record it (or strictly fail)
-        if (!secret || secret === 'rzp_test_secret_mock') {
-            console.log('MOCK VERIFICATION: Skipping actual crypto check.');
-            // We still record the payment to database
+        // Test / Mock verification check
+        if (!secret || secret === 'rzp_test_secret_mock' || isMock) {
+            console.log('MOCK VERIFICATION: Signature check simulated.');
             const payment = new Payment({
                 userId: req.user._id,
                 amount: Number(amount),
                 type,
-                transactionId: razorpay_payment_id || `MOCK-PAY-${Date.now()}`,
+                transactionId: txnId,
                 status: 'Completed'
             });
             await payment.save();
-            return res.json({ status: 'ok', message: 'Payment recorded (Mock Mode)' });
+            const populated = await Payment.findById(payment._id).populate('userId', 'name email');
+            return res.json({ status: 'ok', message: 'Payment verified and recorded (Mock Mode)', data: populated });
+        }
+
+        if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+            return res.status(400).json({ message: 'Order ID, Payment ID, and Signature are required for verification' });
         }
 
         const generated_signature = crypto
@@ -91,7 +107,7 @@ const verifyPayment = async (req, res) => {
             .digest('hex');
 
         if (generated_signature === razorpay_signature) {
-            // 2. Signature is valid, record in database
+            // Signature is valid: record payment in database
             const payment = new Payment({
                 userId: req.user._id,
                 amount: Number(amount),
@@ -100,10 +116,11 @@ const verifyPayment = async (req, res) => {
                 status: 'Completed'
             });
             await payment.save();
+            const populated = await Payment.findById(payment._id).populate('userId', 'name email');
             
-            res.json({ status: 'ok', message: 'Payment verified and recorded successfully' });
+            res.json({ status: 'ok', message: 'Payment verified and recorded successfully', data: populated });
         } else {
-            res.status(400).json({ message: 'Invalid payment signature' });
+            res.status(400).json({ message: 'Invalid payment signature verification' });
         }
     } catch (error) {
         console.error('Razorpay Verification Error:', error);

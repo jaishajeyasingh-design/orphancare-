@@ -31,14 +31,14 @@ const Dashboard = () => {
     }
 
     return (
-        <div className="space-y-6 pb-12 animate-fade-in">
+        <div className="space-y-4 pb-6 animate-fade-in">
             {/* Conditional Global Summary based on Role */}
             {(activeRole === 'Admin' || activeRole === 'Donor') && (
                 <SummaryMetrics />
             )}
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                <div className="xl:col-span-2 space-y-6">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+                <div className="xl:col-span-2 space-y-4">
                     {activeRole === 'Admin' && (
                         <QuickActions />
                     )}
@@ -52,13 +52,13 @@ const Dashboard = () => {
                     )}
 
                     {activeRole === 'Volunteer' && (
-                        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm mt-6 flex justify-center items-center h-64">
-                            <p className="text-slate-500 font-medium">Role-specific tasks list placeholder</p>
+                        <div className="bg-white p-4.5 rounded-xl border border-[#E2E8F0] shadow-2xs flex justify-center items-center h-48">
+                            <p className="text-[#64748B] text-sm font-medium">Role-specific tasks list placeholder</p>
                         </div>
                     )}
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-4">
                     <ActivityTimeline />
                     
                     {activeRole === 'Admin' && (
